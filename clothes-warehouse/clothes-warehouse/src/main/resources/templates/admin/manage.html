@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management - Clothes Warehouse</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <style>
+        :root {
+            --primary-color: #2c1810;
+            --primary-light: rgba(44, 24, 16, 0.1);
+            --primary-medium: rgba(44, 24, 16, 0.25);
+            --accent-color: #b8a090;
+            --light-color: #f8f9fa;
+            --dark-color: #3a3a3a;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #2c1810;
+            transition: color 0.3s ease-in-out;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+        }
+        
+        .nav-tabs .nav-link {
+            font-weight: bold;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: var(--dark-color);
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-top: 3px solid var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .nav-tabs .nav-link:hover:not(.active) {
+            background-color: var(--primary-light);
+            border-color: var(--primary-light) var(--primary-light) #dee2e6;
+        }
+        
+        .card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .table td {
+            vertical-align: middle;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a0f09;
+            border-color: #1a0f09;
+        }
+        
+        .btn-success {
+            background-color: #2e856e;
+            border-color: #2e856e;
+        }
+        
+        .btn-success:hover {
+            background-color: #246855;
+            border-color: #246855;
+        }
+        
+        .btn-info {
+            background-color: #5b7f95;
+            border-color: #5b7f95;
+        }
+        
+        .btn-info:hover {
+            background-color: #4a6a7d;
+            border-color: #4a6a7d;
+        }
+        
+        .input-group-text {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--primary-light);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem var(--primary-medium);
+        }
+        
+        label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: none;
+        }
+        
+        .modal-title {
+            color: white;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <header th:include="~{fragments/header.html}"></header>
+
+    <div class="content container mt-5">
+        <h1 class="text-center mb-4" style="color: var(--primary-color)">Admin Management</h1>
+
+        <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> Item has been successfully replenished from a distribution center.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div th:if="${param.addSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> Item has been successfully added to the distribution center.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="inventory-tab" data-toggle="tab" href="#inventory" role="tab" aria-controls="inventory" aria-selected="true">
+                    <i class="fa fa-box"></i> Inventory
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="distribution-tab" data-toggle="tab" href="#distribution" role="tab" aria-controls="distribution" aria-selected="false">
+                    <i class="fa fa-warehouse"></i> Distribution Centers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="request-tab" data-toggle="tab" href="#request" role="tab" aria-controls="request" aria-selected="false">
+                    <i class="fa fa-cart-plus"></i> Request Items
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="add-tab" data-toggle="tab" href="#add" role="tab" aria-controls="add" aria-selected="false">
+                    <i class="fa fa-plus-circle"></i> Add Items
+                </a>
+            </li>
+            <li class="nav-item ml-auto">
+                <a class="nav-link" href="/employee/dc-management" style="color: #2c1810;">
+                    <i class="fa fa-warehouse"></i> Manage DC Items
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="apiManagerDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #2c1810;">
+                        <i class="fa fa-code"></i> API Manager
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="apiManagerDropdown">
+                        <a class="dropdown-item" href="http://localhost:8081/api-manager" target="_blank">DEV Environment</a>
+                        <a class="dropdown-item" href="http://localhost:8082/api-manager" target="_blank">QA Environment</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="apiDocsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #2c1810;">
+                        <i class="fa fa-book"></i> API Docs
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="apiDocsDropdown">
+                        <a class="dropdown-item" href="http://localhost:8081/api-docs" target="_blank">DEV Environment</a>
+                        <a class="dropdown-item" href="http://localhost:8082/api-docs" target="_blank">QA Environment</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabsContent">
+            <div class="tab-pane fade show active" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="card-title">Inventory Management</h2>
+                            <a th:href="@{/add}" class="btn btn-primary">Add New Item</a>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <form th:action="@{/admin/search}" method="get">
+                                    <input type="hidden" name="page" value="1">
+                                    <input type="hidden" name="size" value="5">
+                                    <input type="hidden" name="sort" th:value="${sortField}">
+                                    <input type="hidden" name="dir" th:value="${sortDir}">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="searchInventory" name="query" placeholder="Search inventory..." th:value="${searchQuery}">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <form th:action="@{/admin/manage}" method="get" id="sortForm">
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <select class="custom-select mr-2" style="width: auto;" name="sort" id="sortSelect">
+                                            <option value="id" th:selected="${sortField == 'id'}">Sort by ID</option>
+                                            <option value="name" th:selected="${sortField == 'name'}">Sort by Name</option>
+                                            <option value="brand" th:selected="${sortField == 'brand'}">Sort by Brand</option>
+                                            <option value="yearOfCreation" th:selected="${sortField == 'yearOfCreation'}">Sort by Year</option>
+                                            <option value="price" th:selected="${sortField == 'price'}">Sort by Price</option>
+                                        </select>
+                                        <select class="custom-select mr-2" style="width: auto;" name="dir" id="dirSelect">
+                                            <option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+                                            <option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Apply</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <a th:href="@{'/admin/manage?sort=id&dir=' + ${sortDir == 'asc' ? 'desc' : 'asc'}}">ID
+                                            <span th:if="${sortField == 'id'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a th:href="@{'/admin/manage?sort=name&dir=' + ${sortDir == 'asc' ? 'desc' : 'asc'}}">Name
+                                            <span th:if="${sortField == 'name'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a th:href="@{'/admin/manage?sort=brand&dir=' + ${sortDir == 'asc' ? 'desc' : 'asc'}}">Brand
+                                            <span th:if="${sortField == 'brand'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a th:href="@{'/admin/manage?sort=yearOfCreation&dir=' + ${sortDir == 'asc' ? 'desc' : 'asc'}}">Year
+                                            <span th:if="${sortField == 'yearOfCreation'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a th:href="@{'/admin/manage?sort=price&dir=' + ${sortDir == 'asc' ? 'desc' : 'asc'}}">Price
+                                            <span th:if="${sortField == 'price'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                        </a>
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item : ${items}">
+                                    <td th:text="${item.id}"></td>
+                                    <td th:text="${item.name}"></td>
+                                    <td th:text="${item.brand}"></td>
+                                    <td th:text="${item.yearOfCreation}"></td>
+                                    <td th:text="${item.price}"></td>
+                                    <td>
+                                        <a th:href="@{/admin/delete/{id}(id=${item.id})}"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to delete this item?')">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mt-4" th:if="${totalPages > 1}">
+                                <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${searchQuery != null ? '/admin/search' : '/admin/manage'} + '?page=1&size=5' + ${searchQuery != null ? '&query=' + searchQuery : ''} + '&sort=' + ${sortField} + '&dir=' + ${sortDir}}">First</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${searchQuery != null ? '/admin/search' : '/admin/manage'} + '?page=' + ${currentPage - 1} + '&size=5' + ${searchQuery != null ? '&query=' + searchQuery : ''} + '&sort=' + ${sortField} + '&dir=' + ${sortDir}}">Previous</a>
+                                </li>
+                                <li class="page-item" th:each="i: ${#numbers.sequence(1, totalPages)}"
+                                    th:classappend="${currentPage == i ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{${searchQuery != null ? '/admin/search' : '/admin/manage'} + '?page=' + ${i} + '&size=5' + ${searchQuery != null ? '&query=' + searchQuery : ''} + '&sort=' + ${sortField} + '&dir=' + ${sortDir}}"
+                                       th:text="${i}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${searchQuery != null ? '/admin/search' : '/admin/manage'} + '?page=' + ${currentPage + 1} + '&size=5' + ${searchQuery != null ? '&query=' + searchQuery : ''} + '&sort=' + ${sortField} + '&dir=' + ${sortDir}}">Next</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{${searchQuery != null ? '/admin/search' : '/admin/manage'} + '?page=' + ${totalPages} + '&size=5' + ${searchQuery != null ? '&query=' + searchQuery : ''} + '&sort=' + ${sortField} + '&dir=' + ${sortDir}}">Last</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="distribution" role="tabpanel" aria-labelledby="distribution-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Distribution Centers</h2>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Items Available</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="dc : ${distributionCenters}">
+                                    <td th:text="${dc.id}"></td>
+                                    <td th:text="${dc.name}"></td>
+                                    <td th:text="${#lists.size(dc.items)}"></td>
+                                    <td th:text="${dc.latitude + ', ' + dc.longitude}"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm" 
+                                                data-toggle="modal" 
+                                                th:data-target="'#itemsModal-' + ${dc.id}">
+                                            View Items
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="request-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Request Item from Distribution Center</h2>
+                        <form th:action="@{/admin/request-item}" method="post">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Item Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="brand">Brand</label>
+                                        <select class="form-control" id="brand" name="brand" required>
+                                            <option value="">Select a brand</option>
+                                            <option th:each="brand : ${brands}"
+                                                    th:value="${brand}"
+                                                    th:text="${brand}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-4">Request Item</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="add" role="tabpanel" aria-labelledby="add-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Add Item to Distribution Center</h2>
+                        <form th:action="@{/admin/add-to-distribution-center}" method="post">
+                            <div class="form-group">
+                                <label for="distributionCenterId">Distribution Center</label>
+                                <select class="form-control" id="distributionCenterId" name="distributionCenterId" required>
+                                    <option value="">Select a distribution center</option>
+                                    <option th:each="dc : ${distributionCenters}"
+                                            th:value="${dc.id}"
+                                            th:text="${dc.name}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="addName">Item Name</label>
+                                        <input type="text" class="form-control" id="addName" name="name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="addBrand">Brand</label>
+                                        <select class="form-control" id="addBrand" name="brand" required>
+                                            <option value="">Select a brand</option>
+                                            <option th:each="brand : ${brands}"
+                                                    th:value="${brand}"
+                                                    th:text="${brand}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="yearOfCreation">Year of Creation</label>
+                                        <input type="number" class="form-control" id="yearOfCreation" name="yearOfCreation" min="2000" max="2022" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="price">Price</label>
+                                        <input type="number" class="form-control" id="price" name="price" min="1000" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="addQuantity">Quantity</label>
+                                        <input type="number" class="form-control" id="addQuantity" name="quantity" min="1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success btn-block mt-4">Add Item</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="dc : ${distributionCenters}" class="modal fade" th:id="'itemsModal-' + ${dc.id}" tabindex="-1" role="dialog" aria-labelledby="itemsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="${dc.name} + ' - Available Items'"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Brand</th>
+                                <th>Year</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${dc.items}">
+                                <td th:text="${item.id}"></td>
+                                <td th:text="${item.name}"></td>
+                                <td th:text="${item.brand}"></td>
+                                <td th:text="${item.yearOfCreation}"></td>
+                                <td th:text="${item.price}"></td>
+                                <td th:text="${item.quantity}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:include="~{fragments/footer.html}"></footer>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html> 

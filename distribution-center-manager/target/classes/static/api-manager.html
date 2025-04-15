@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution Center API Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        .section-card {
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            border-radius: 8px 8px 0 0 !important;
+            font-weight: bold;
+        }
+        .json-response {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+            border-bottom: 3px solid #0d6efd;
+        }
+        .form-container {
+            padding: 20px;
+        }
+        .env-badge {
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="alert alert-info mb-4" id="environment-info">
+            <h4>Environment: <span id="current-environment">Loading...</span></h4>
+            <p id="base-url-display">Base URL: <span id="base-url">Loading...</span></p>
+            <p>Default credentials: <code>Username: admin / Password: admin</code></p>
+        </div>
+
+        <h1 class="mb-4">Distribution Center API Manager</h1>
+        
+        <ul class="nav nav-tabs mb-4" id="apiTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="centers-tab" data-bs-toggle="tab" data-bs-target="#centers" type="button" role="tab">
+                    Distribution Centers
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">
+                    Items Management
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab">
+                    Search &amp; Request
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="apiTabsContent">
+            <!-- Distribution Centers Tab -->
+            <div class="tab-pane fade show active" id="centers" role="tabpanel" aria-labelledby="centers-tab">
+                <!-- Get All Distribution Centers -->
+                <div class="card section-card">
+                    <div class="card-header bg-primary text-white">
+                        GET All Distribution Centers
+                    </div>
+                    <div class="card-body">
+                        <p>Retrieve a list of all distribution centers.</p>
+                        <button id="get-centers-btn" class="btn btn-primary">Execute Request</button>
+                        <hr>
+                        <div id="centers-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Get Distribution Center by ID -->
+                <div class="card section-card">
+                    <div class="card-header bg-info text-white">
+                        GET Distribution Center by ID
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="get-center-form">
+                            <div class="mb-3">
+                                <label for="center-id" class="form-label">Distribution Center ID</label>
+                                <input type="number" class="form-control" id="center-id" required>
+                            </div>
+                            <button type="submit" class="btn btn-info">Get Distribution Center</button>
+                        </form>
+                        <hr>
+                        <div id="center-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Create Distribution Center -->
+                <div class="card section-card">
+                    <div class="card-header bg-success text-white">
+                        CREATE New Distribution Center
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="create-center-form">
+                            <div class="mb-3">
+                                <label for="center-name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="center-name" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="center-latitude" class="form-label">Latitude</label>
+                                    <input type="number" step="0.0001" class="form-control" id="center-latitude" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="center-longitude" class="form-label">Longitude</label>
+                                    <input type="number" step="0.0001" class="form-control" id="center-longitude" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Create Distribution Center</button>
+                        </form>
+                        <hr>
+                        <div id="create-center-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Delete Distribution Center -->
+                <div class="card section-card">
+                    <div class="card-header bg-danger text-white">
+                        DELETE Distribution Center
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="delete-center-form">
+                            <div class="mb-3">
+                                <label for="delete-center-id" class="form-label">Distribution Center ID</label>
+                                <input type="number" class="form-control" id="delete-center-id" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger">Delete Distribution Center</button>
+                        </form>
+                        <hr>
+                        <div id="delete-center-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Management Tab -->
+            <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+                <!-- Add Item to Distribution Center -->
+                <div class="card section-card">
+                    <div class="card-header bg-success text-white">
+                        ADD Item to Distribution Center
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="add-item-form">
+                            <div class="mb-3">
+                                <label for="item-center-id" class="form-label">Distribution Center ID</label>
+                                <input type="number" class="form-control" id="item-center-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="item-id" class="form-label">Item ID</label>
+                                <input type="number" class="form-control" id="item-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="item-name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="item-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="item-brand" class="form-label">Brand</label>
+                                <select class="form-select" id="item-brand" required>
+                                    <option value="">Select Brand</option>
+                                    <option value="BALENCIAGA">BALENCIAGA</option>
+                                    <option value="STONE_ISLAND">STONE_ISLAND</option>
+                                    <option value="DIOR">DIOR</option>
+                                    <option value="GUCCI">GUCCI</option>
+                                    <option value="PRADA">PRADA</option>
+                                    <option value="VERSACE">VERSACE</option>
+                                    <option value="OFF_WHITE">OFF_WHITE</option>
+                                    <option value="SUPREME">SUPREME</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="item-year" class="form-label">Year of Creation</label>
+                                    <input type="number" class="form-control" id="item-year" min="2000" max="2022" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="item-price" class="form-label">Price</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="item-price" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="item-quantity" class="form-label">Quantity</label>
+                                    <input type="number" min="1" class="form-control" id="item-quantity" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Add Item</button>
+                        </form>
+                        <hr>
+                        <div id="add-item-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Delete Item from Distribution Center -->
+                <div class="card section-card">
+                    <div class="card-header bg-danger text-white">
+                        DELETE Item from Distribution Center
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="delete-item-form">
+                            <div class="mb-3">
+                                <label for="delete-item-center-id" class="form-label">Distribution Center ID</label>
+                                <input type="number" class="form-control" id="delete-item-center-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="delete-item-id" class="form-label">Item ID</label>
+                                <input type="number" class="form-control" id="delete-item-id" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger">Delete Item</button>
+                        </form>
+                        <hr>
+                        <div id="delete-item-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search & Request Tab -->
+            <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+                <!-- Search Items -->
+                <div class="card section-card">
+                    <div class="card-header bg-primary text-white">
+                        SEARCH Items
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="search-items-form">
+                            <div class="mb-3">
+                                <label for="search-brand" class="form-label">Brand</label>
+                                <select class="form-select" id="search-brand" required>
+                                    <option value="">Select Brand</option>
+                                    <option value="BALENCIAGA">BALENCIAGA</option>
+                                    <option value="STONE_ISLAND">STONE_ISLAND</option>
+                                    <option value="DIOR">DIOR</option>
+                                    <option value="GUCCI">GUCCI</option>
+                                    <option value="PRADA">PRADA</option>
+                                    <option value="VERSACE">VERSACE</option>
+                                    <option value="OFF_WHITE">OFF_WHITE</option>
+                                    <option value="SUPREME">SUPREME</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="search-name" class="form-label">Item Name</label>
+                                <input type="text" class="form-control" id="search-name" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search Items</button>
+                        </form>
+                        <hr>
+                        <div id="search-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Request Item -->
+                <div class="card section-card">
+                    <div class="card-header bg-warning text-dark">
+                        REQUEST Item
+                    </div>
+                    <div class="card-body form-container">
+                        <form id="request-item-form">
+                            <div class="mb-3">
+                                <label for="request-center-id" class="form-label">Distribution Center ID</label>
+                                <input type="number" class="form-control" id="request-center-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="request-item-id" class="form-label">Item ID</label>
+                                <input type="number" class="form-control" id="request-item-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="request-quantity" class="form-label">Quantity to Request</label>
+                                <input type="number" min="1" class="form-control" id="request-quantity" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning">Request Item</button>
+                        </form>
+                        <hr>
+                        <div id="request-response" class="json-response mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //Environment detection and configuration
+            let baseUrl = window.location.href.includes(':8082') ? 'http://localhost:8082' : 'http://localhost:8081';
+            let environment = baseUrl.includes('8082') ? 'QA' : 'DEV';
+            
+            //Update UI with environment info
+            document.getElementById('current-environment').textContent = environment;
+            document.getElementById('base-url').textContent = baseUrl;
+            
+            //Helper function to create auth headers
+            function createAuthHeaders() {
+                return {
+                    'Authorization': 'Basic ' + btoa('admin:admin'),
+                    'Content-Type': 'application/json'
+                };
+            }
+
+            //Helper to display API responses
+            function displayResponse(elementId, data, isError = false) {
+                const element = document.getElementById(elementId);
+                element.style.display = 'block';
+                
+                if (isError) {
+                    element.style.color = 'red';
+                    element.textContent = 'Error: ' + (typeof data === 'object' ? JSON.stringify(data, null, 2) : data);
+                } else {
+                    element.style.color = 'inherit';
+                    element.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+                }
+            }
+
+            //Get All Distribution Centers
+            document.getElementById('get-centers-btn').addEventListener('click', function() {
+                fetch(`${baseUrl}/api/distribution-centers`, {
+                    method: 'GET',
+                    headers: createAuthHeaders()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('centers-response', data);
+                })
+                .catch(error => {
+                    displayResponse('centers-response', error.message, true);
+                });
+            });
+
+            //Get Distribution Center by ID
+            document.getElementById('get-center-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerId = document.getElementById('center-id').value;
+                
+                fetch(`${baseUrl}/api/distribution-centers/${centerId}`, {
+                    method: 'GET',
+                    headers: createAuthHeaders()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('center-response', data);
+                })
+                .catch(error => {
+                    displayResponse('center-response', error.message, true);
+                });
+            });
+
+            //Create Distribution Center
+            document.getElementById('create-center-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerData = {
+                    name: document.getElementById('center-name').value,
+                    latitude: parseFloat(document.getElementById('center-latitude').value),
+                    longitude: parseFloat(document.getElementById('center-longitude').value),
+                    items: []
+                };
+                
+                fetch(`${baseUrl}/api/distribution-centers`, {
+                    method: 'POST',
+                    headers: createAuthHeaders(),
+                    body: JSON.stringify(centerData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('create-center-response', data);
+                })
+                .catch(error => {
+                    displayResponse('create-center-response', error.message, true);
+                });
+            });
+
+            //Delete Distribution Center
+            document.getElementById('delete-center-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerId = document.getElementById('delete-center-id').value;
+                
+                fetch(`${baseUrl}/api/distribution-centers/${centerId}`, {
+                    method: 'DELETE',
+                    headers: createAuthHeaders()
+                })
+                .then(response => {
+                    if (response.ok) {
+                        displayResponse('delete-center-response', 'Distribution center deleted successfully.');
+                    } else {
+                        throw new Error('Failed to delete distribution center');
+                    }
+                })
+                .catch(error => {
+                    displayResponse('delete-center-response', error.message, true);
+                });
+            });
+
+            //Add Item to Distribution Center
+            document.getElementById('add-item-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerId = document.getElementById('item-center-id').value;
+                const itemData = {
+                    id: parseInt(document.getElementById('item-id').value),
+                    name: document.getElementById('item-name').value,
+                    brand: document.getElementById('item-brand').value,
+                    yearOfCreation: parseInt(document.getElementById('item-year').value),
+                    price: parseFloat(document.getElementById('item-price').value),
+                    quantity: parseInt(document.getElementById('item-quantity').value)
+                };
+                
+                fetch(`${baseUrl}/api/distribution-centers/${centerId}/items`, {
+                    method: 'POST',
+                    headers: createAuthHeaders(),
+                    body: JSON.stringify(itemData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('add-item-response', data);
+                })
+                .catch(error => {
+                    displayResponse('add-item-response', error.message, true);
+                });
+            });
+
+            //Delete Item from Distribution Center
+            document.getElementById('delete-item-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerId = document.getElementById('delete-item-center-id').value;
+                const itemId = document.getElementById('delete-item-id').value;
+                
+                fetch(`${baseUrl}/api/distribution-centers/${centerId}/items/${itemId}`, {
+                    method: 'DELETE',
+                    headers: createAuthHeaders()
+                })
+                .then(response => {
+                    if (response.ok) {
+                        displayResponse('delete-item-response', 'Item deleted successfully.');
+                    } else {
+                        throw new Error('Failed to delete item');
+                    }
+                })
+                .catch(error => {
+                    displayResponse('delete-item-response', error.message, true);
+                });
+            });
+
+            //Search Items
+            document.getElementById('search-items-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const brand = document.getElementById('search-brand').value;
+                const name = document.getElementById('search-name').value;
+                
+                fetch(`${baseUrl}/api/distribution-centers/items/search?brand=${brand}&name=${name}`, {
+                    method: 'GET',
+                    headers: createAuthHeaders()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('search-response', data);
+                })
+                .catch(error => {
+                    displayResponse('search-response', error.message, true);
+                });
+            });
+
+            //Request Item
+            document.getElementById('request-item-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const centerId = document.getElementById('request-center-id').value;
+                const itemId = document.getElementById('request-item-id').value;
+                const quantity = document.getElementById('request-quantity').value;
+                
+                fetch(`${baseUrl}/api/distribution-centers/${centerId}/items/${itemId}/request?quantity=${quantity}`, {
+                    method: 'POST',
+                    headers: createAuthHeaders()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResponse('request-response', data);
+                })
+                .catch(error => {
+                    displayResponse('request-response', error.message, true);
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Distribution Center API Documentation - QA Environment" />
+  <title>Distribution Center API Documentation (QA Environment)</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+  <style>
+    .qa-banner {
+      background-color: #ffc107;
+      color: #212529;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    .swagger-ui {
+      margin-top: 50px;
+      padding-top: 20px;
+    }
+    .swagger-ui .topbar {
+      background-color: #34495e;
+    }
+    .swagger-ui .info .title {
+      color: #34495e;
+    }
+    .swagger-ui .opblock.opblock-get {
+      border-color: #0099e5;
+      background: rgba(0,153,229,.1);
+    }
+    .swagger-ui .opblock.opblock-post {
+      border-color: #49cc90;
+      background: rgba(73,204,144,.1);
+    }
+    .swagger-ui .opblock.opblock-delete {
+      border-color: #f93e3e;
+      background: rgba(249,62,62,.1);
+    }
+    .swagger-ui .opblock.opblock-put {
+      border-color: #fca130;
+      background: rgba(252,161,48,.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="qa-banner">
+    QA ENVIRONMENT - PORT 8082
+  </div>
+  
+  <div id="swagger-ui"></div>
+  
+  <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.onload = () => {
+      //Hardcode to QA port
+      const baseUrl = 'http://localhost:8082';
+      
+      window.ui = SwaggerUIBundle({
+        url: baseUrl + "/api-docs",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout",
+        docExpansion: "list",
+        tagsSorter: "alpha",
+        operationsSorter: "alpha",
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 1,
+        withCredentials: true,
+        showMutatedRequest: true,
+        requestInterceptor: (req) => {
+          //Add basic auth credentials
+          req.headers.Authorization = "Basic " + btoa("admin:admin");
+          return req;
+        }
+      });
+    };
+  </script>
+</body>
+</html> 

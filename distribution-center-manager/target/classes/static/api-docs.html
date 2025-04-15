@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Distribution Center API Documentation - DEV Environment" />
+    <title>Distribution Center API Documentation (DEV Environment)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        .endpoint {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .method {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 10px;
+            color: white;
+        }
+        .get {
+            background-color: #61affe;
+        }
+        .post {
+            background-color: #49cc90;
+        }
+        .delete {
+            background-color: #f93e3e;
+        }
+        .path {
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        .endpoint-title {
+            margin-bottom: 15px;
+        }
+        .parameter-table, .response-table {
+            margin-top: 15px;
+        }
+        .profile-badge {
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .dev {
+            background-color: #5cb85c;
+        }
+        .qa {
+            background-color: #f0ad4e;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .nav-link.active {
+            font-weight: bold;
+        }
+        .endpoint-anchor {
+            padding-top: 70px;
+            margin-top: -70px;
+        }
+        .swagger-ui .topbar {
+            background-color: #34495e;
+        }
+        .swagger-ui .info .title {
+            color: #34495e;
+        }
+        .swagger-ui .opblock.opblock-get {
+            border-color: #0099e5;
+            background: rgba(0,153,229,.1);
+        }
+        .swagger-ui .opblock.opblock-post {
+            border-color: #49cc90;
+            background: rgba(73,204,144,.1);
+        }
+        .swagger-ui .opblock.opblock-delete {
+            border-color: #f93e3e;
+            background: rgba(249,62,62,.1);
+        }
+        .swagger-ui .opblock.opblock-put {
+            border-color: #fca130;
+            background: rgba(252,161,48,.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div id="profile-info" class="alert alert-info">
+                    <h4>Current Environment: <span id="current-profile">Loading...</span></h4>
+                    <p><strong>Base URL:</strong> <span id="base-url">Loading...</span></p>
+                    <p><strong>Username:</strong> admin <strong>Password:</strong> admin</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="sticky-top pt-3">
+                    <h5>APIs</h5>
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action" href="#get-all-distribution-centers">Get All Distribution Centers</a>
+                        <a class="list-group-item list-group-item-action" href="#get-distribution-center">Get Distribution Center by ID</a>
+                        <a class="list-group-item list-group-item-action" href="#create-distribution-center">Create Distribution Center</a>
+                        <a class="list-group-item list-group-item-action" href="#delete-distribution-center">Delete Distribution Center</a>
+                        <a class="list-group-item list-group-item-action" href="#add-item">Add Item to Distribution Center</a>
+                        <a class="list-group-item list-group-item-action" href="#delete-item">Delete Item from Distribution Center</a>
+                        <a class="list-group-item list-group-item-action" href="#search-items">Search Items</a>
+                        <a class="list-group-item list-group-item-action" href="#request-item">Request Item</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <h1>Distribution Center Manager API</h1>
+                <p class="lead">Documentation for interacting with the Distribution Center Manager RESTful API.</p>
+                
+                <div class="endpoint-anchor" id="get-all-distribution-centers"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/distribution-centers</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Returns a list of all distribution centers.</p>
+                    
+                    <h5>Response Example:</h5>
+                    <pre><code>[
+  {
+    "id": 1,
+    "name": "Toronto Distribution Center",
+    "items": [
+      {
+        "id": 1,
+        "name": "Red T-Shirt",
+        "brand": "GUCCI",
+        "yearOfCreation": 2020,
+        "price": 1500.0,
+        "quantity": 10,
+        "distributionCenterId": 1
+      },
+      {
+        "id": 2,
+        "name": "Designer Jeans",
+        "brand": "PRADA",
+        "yearOfCreation": 2019,
+        "price": 2000.0,
+        "quantity": 5,
+        "distributionCenterId": 1
+      }
+    ],
+    "latitude": 43.6532,
+    "longitude": -79.3832
+  },
+  {
+    "id": 2,
+    "name": "Vancouver Distribution Center",
+    "items": [...],
+    "latitude": 49.2827,
+    "longitude": -123.1207
+  }
+]</code></pre>
+                </div>
+
+                <div class="endpoint-anchor" id="get-distribution-center"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/distribution-centers/{id}</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Returns a specific distribution center by ID.</p>
+                    
+                    <h5>Path Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>id</td>
+                                <td>Long</td>
+                                <td>The ID of the distribution center</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Response Example:</h5>
+                    <pre><code>{
+  "id": 1,
+  "name": "Toronto Distribution Center",
+  "items": [
+    {
+      "id": 1,
+      "name": "Red T-Shirt",
+      "brand": "GUCCI",
+      "yearOfCreation": 2020,
+      "price": 1500.0,
+      "quantity": 10,
+      "distributionCenterId": 1
+    },
+    {
+      "id": 2,
+      "name": "Designer Jeans",
+      "brand": "PRADA",
+      "yearOfCreation": 2019,
+      "price": 2000.0,
+      "quantity": 5,
+      "distributionCenterId": 1
+    }
+  ],
+  "latitude": 43.6532,
+  "longitude": -79.3832
+}</code></pre>
+                </div>
+
+                <div class="endpoint-anchor" id="create-distribution-center"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/distribution-centers</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Creates a new distribution center.</p>
+                    
+                    <h5>Request Body:</h5>
+                    <pre><code>{
+  "name": "Ottawa Distribution Center",
+  "latitude": 45.4215,
+  "longitude": -75.6972,
+  "items": []
+}</code></pre>
+
+                    <h5>Response Example:</h5>
+                    <pre><code>{
+  "id": 5,
+  "name": "Ottawa Distribution Center",
+  "items": [],
+  "latitude": 45.4215,
+  "longitude": -75.6972
+}</code></pre>
+                </div>
+
+                <div class="endpoint-anchor" id="delete-distribution-center"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method delete">DELETE</span>
+                        <span class="path">/api/distribution-centers/{id}</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Deletes a distribution center by ID.</p>
+                    
+                    <h5>Path Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>id</td>
+                                <td>Long</td>
+                                <td>The ID of the distribution center to delete</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Response:</h5>
+                    <p>HTTP 200 OK with empty body on success</p>
+                </div>
+
+                <div class="endpoint-anchor" id="add-item"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/distribution-centers/{id}/items</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Adds an item to a distribution center.</p>
+                    
+                    <h5>Path Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>id</td>
+                                <td>Long</td>
+                                <td>The ID of the distribution center</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Request Body:</h5>
+                    <pre><code>{
+  "id": 9,
+  "name": "Designer Belt",
+  "brand": "GUCCI",
+  "yearOfCreation": 2021,
+  "price": 1200.0,
+  "quantity": 15
+}</code></pre>
+
+                    <h5>Response Example:</h5>
+                    <pre><code>{
+  "id": 9,
+  "name": "Designer Belt",
+  "brand": "GUCCI",
+  "yearOfCreation": 2021,
+  "price": 1200.0,
+  "quantity": 15,
+  "distributionCenterId": 1
+}</code></pre>
+                </div>
+
+                <div class="endpoint-anchor" id="delete-item"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method delete">DELETE</span>
+                        <span class="path">/api/distribution-centers/{distributionCenterId}/items/{itemId}</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Deletes an item from a distribution center.</p>
+                    
+                    <h5>Path Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>distributionCenterId</td>
+                                <td>Long</td>
+                                <td>The ID of the distribution center</td>
+                            </tr>
+                            <tr>
+                                <td>itemId</td>
+                                <td>Integer</td>
+                                <td>The ID of the item to delete</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Response:</h5>
+                    <p>HTTP 200 OK with empty body on success</p>
+                </div>
+
+                <div class="endpoint-anchor" id="search-items"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/distribution-centers/items/search</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Searches for items by brand and name across all distribution centers.</p>
+                    
+                    <h5>Query Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>brand</td>
+                                <td>Brand (Enum)</td>
+                                <td>The brand to search for (e.g., GUCCI, PRADA, DIOR, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>String</td>
+                                <td>The name of the item to search for</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Response Example:</h5>
+                    <pre><code>[
+  {
+    "id": 1,
+    "name": "Red T-Shirt",
+    "brand": "GUCCI",
+    "yearOfCreation": 2020,
+    "price": 1500.0,
+    "quantity": 10,
+    "distributionCenterId": 1
+  }
+]</code></pre>
+                </div>
+
+                <div class="endpoint-anchor" id="request-item"></div>
+                <div class="endpoint">
+                    <h3 class="endpoint-title">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/distribution-centers/{distributionCenterId}/items/{itemId}/request</span>
+                        <span class="badge bg-success profile-badge dev">DEV</span>
+                        <span class="badge bg-warning text-dark profile-badge qa">QA</span>
+                    </h3>
+                    <p>Requests an item from a distribution center, reducing its quantity.</p>
+                    
+                    <h5>Path Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>distributionCenterId</td>
+                                <td>Long</td>
+                                <td>The ID of the distribution center</td>
+                            </tr>
+                            <tr>
+                                <td>itemId</td>
+                                <td>Integer</td>
+                                <td>The ID of the item to request</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Query Parameters:</h5>
+                    <table class="table parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>quantity</td>
+                                <td>Integer</td>
+                                <td>The quantity of the item to request</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Response Example:</h5>
+                    <pre><code>{
+  "id": 1,
+  "name": "Red T-Shirt",
+  "brand": "GUCCI",
+  "yearOfCreation": 2020,
+  "price": 1500.0,
+  "quantity": 5, // Reduced by the requested quantity
+  "distributionCenterId": 1
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //Detect the current profile and update the UI
+            const currentUrl = window.location.href;
+            const profileBadge = document.getElementById('current-profile');
+            const baseUrlElement = document.getElementById('base-url');
+            
+            //Check if we're on port 8081 (dev) or 8082 (qa)
+            if (currentUrl.includes(':8082')) {
+                profileBadge.textContent = 'QA';
+                profileBadge.className = 'badge bg-warning text-dark';
+                baseUrlElement.textContent = 'http://localhost:8082';
+            } else {
+                // Default to dev
+                profileBadge.textContent = 'DEV';
+                profileBadge.className = 'badge bg-success';
+                baseUrlElement.textContent = 'http://localhost:8081';
+            }
+            
+            //Active link highlighting
+            const listItems = document.querySelectorAll('.list-group-item');
+            
+            //Add click event to scroll to section
+            listItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(item.getAttribute('href'));
+                    window.scrollTo({
+                        top: target.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            //Update active item on scroll
+            window.addEventListener('scroll', () => {
+                let currentSection = '';
+                const sections = document.querySelectorAll('.endpoint-anchor');
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    if (window.scrollY >= sectionTop) {
+                        currentSection = '#' + section.getAttribute('id');
+                    }
+                });
+                
+                listItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === currentSection) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js" crossorigin></script>
+    <script>
+        window.onload = () => {
+            //Hardcode to DEV port
+            const baseUrl = 'http://localhost:8081';
+            
+            window.ui = SwaggerUIBundle({
+                url: baseUrl + "/api-docs",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout",
+                docExpansion: "list",
+                tagsSorter: "alpha",
+                operationsSorter: "alpha",
+                defaultModelsExpandDepth: 1,
+                defaultModelExpandDepth: 1,
+                withCredentials: true,
+                showMutatedRequest: true,
+                requestInterceptor: (req) => {
+                    //Add basic auth credentials
+                    req.headers.Authorization = "Basic " + btoa("admin:admin");
+                    return req;
+                }
+            });
+        };
+    </script>
+</body>
+</html> 

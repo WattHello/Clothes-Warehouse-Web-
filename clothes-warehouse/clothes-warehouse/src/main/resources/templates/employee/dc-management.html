@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution Center Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <style>
+        :root {
+            --primary-color: #2c1810;
+            --primary-light: rgba(44, 24, 16, 0.1);
+            --primary-medium: rgba(44, 24, 16, 0.25);
+            --accent-color: #b8a090;
+            --light-color: #f8f9fa;
+            --dark-color: #3a3a3a;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+        }
+        
+        .card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: none;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a0f09;
+            border-color: #1a0f09;
+        }
+        
+        .btn-success {
+            background-color: #2e856e;
+            border-color: #2e856e;
+        }
+        
+        .btn-success:hover {
+            background-color: #246855;
+            border-color: #246855;
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <header th:include="~{fragments/header.html}"></header>
+
+    <div class="content container mt-5">
+        <h1 class="text-center mb-4" style="color: var(--primary-color)">Distribution Center Management</h1>
+        
+        <div th:if="${param.addSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success!</strong> Item has been successfully added to the distribution center.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Add Item to Distribution Center</h2>
+                        <form th:action="@{/employee/add-to-dc}" method="post">
+                            <div class="form-group">
+                                <label for="distributionCenterId">Distribution Center</label>
+                                <select class="form-control" id="distributionCenterId" name="distributionCenterId" required>
+                                    <option value="">Select a distribution center</option>
+                                    <option th:each="dc : ${distributionCenters}"
+                                            th:value="${dc.id}"
+                                            th:text="${dc.name}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="name">Item Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="brand">Brand</label>
+                                <select class="form-control" id="brand" name="brand" required>
+                                    <option value="">Select a brand</option>
+                                    <option th:each="brand : ${brands}"
+                                            th:value="${brand}"
+                                            th:text="${brand}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="yearOfCreation">Year of Creation</label>
+                                <input type="number" class="form-control" id="yearOfCreation" name="yearOfCreation" min="2000" max="2022" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="price">Price</label>
+                                <input type="number" class="form-control" id="price" name="price" min="1000" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success btn-block mt-4">Add Item</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8 col-md-7">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Distribution Centers</h2>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Items Available</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="dc : ${distributionCenters}">
+                                    <td th:text="${dc.name}"></td>
+                                    <td th:text="${#lists.size(dc.items)}"></td>
+                                    <td th:text="${dc.latitude + ', ' + dc.longitude}"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm" 
+                                                data-toggle="modal" 
+                                                th:data-target="'#itemsModal-' + ${dc.id}">
+                                            View Items
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing items in each distribution center -->
+    <div th:each="dc : ${distributionCenters}" class="modal fade" th:id="'itemsModal-' + ${dc.id}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--primary-color); color: white;">
+                    <h5 class="modal-title" th:text="${dc.name} + ' - Available Items'"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Brand</th>
+                                <th>Year</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${dc.items}">
+                                <td th:text="${item.id}"></td>
+                                <td th:text="${item.name}"></td>
+                                <td th:text="${item.brand}"></td>
+                                <td th:text="${item.yearOfCreation}"></td>
+                                <td th:text="${item.price}"></td>
+                                <td th:text="${item.quantity}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:include="~{fragments/footer.html}"></footer>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html> 
